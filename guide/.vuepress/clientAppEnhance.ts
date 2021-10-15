@@ -1,9 +1,10 @@
 import { defineClientAppEnhance } from '@vuepress/client';
+import Plausible from 'plausible-tracker';
 
-declare const __VUEPRESS_SSR__: boolean
+declare const __VUEPRESS_SSR__: boolean;
 declare global {
   interface Window {
-    plausible: HTMLScriptElement;
+    plausible: ReturnType<typeof Plausible>;
   }
 }
 
@@ -11,13 +12,12 @@ export default defineClientAppEnhance(() => {
   if (__VUEPRESS_SSR__ || typeof window === 'undefined' || window.plausible)
     return;
 
-  const plausibleScript = document.createElement('script');
-  plausibleScript.setAttribute('data-domain', 'joelius300.github.io/werewolf-guide');
-  plausibleScript.src = 'https://plausible.io/js/plausible.js';
-  plausibleScript.async = true;
-  plausibleScript.defer = true;
+  const plausible = Plausible({
+    domain: 'joelius300.github.io/werewolf-guide',
+  });
 
-  document.head.appendChild(plausibleScript);
+  plausible.enableAutoPageviews();
+  plausible.enableAutoOutboundTracking();
 
-  window.plausible = plausibleScript;
+  window.plausible = plausible;
 });
